@@ -84,9 +84,32 @@ html = html.replace('/index.tsx', '/index.js');
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
 console.log('  index.html -> dist/index.html');
 
+// Copy dist to Android assets
+const ANDROID_ASSETS = path.join(ROOT, 'android', 'app', 'src', 'main', 'assets', 'webapp');
+function copyDir(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+if (fs.existsSync(path.join(ROOT, 'android', 'app'))) {
+  if (fs.existsSync(ANDROID_ASSETS)) fs.rmSync(ANDROID_ASSETS, { recursive: true });
+  copyDir(OUT, ANDROID_ASSETS);
+  console.log('\n  Copied dist -> android/app/src/main/assets/webapp/');
+}
+
 if (hasErrors) {
   console.error('\nBuild completed with errors.');
   process.exit(1);
 } else {
-  console.log('\nBuild successful! Run with: npx http-server dist -p 3000');
+  console.log('\nBuild successful!');
+  console.log('  Web:     npx http-server dist -p 3000');
+  console.log('  Android: Open android/ in Android Studio and run');
 }
