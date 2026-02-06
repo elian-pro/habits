@@ -1,0 +1,7 @@
+{
+  "name": "HabitFlow AI",
+  "description": "Una plataforma inteligente para la formación de hábitos que utiliza IA para proporcionar consejos personalizados, análisis de progreso y motivación diaria.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
